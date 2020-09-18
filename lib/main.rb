@@ -1,5 +1,5 @@
 require './lib/board'
-require './lib/winner'
+require './lib/win_checker'
 
 class Game
   def initialize

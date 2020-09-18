@@ -46,6 +46,7 @@ class WinCheck
   def diagonal_win
     0.upto(@size[:x] - 1) do |x|
       0.upto(@size[:y] - 1) do |y|
+        next unless set?(x, y)
         winner = check_upper_diagonal(x, y) || check_lower_diagonal(x, y)
         return winner unless winner.nil?
       end
@@ -54,13 +55,11 @@ class WinCheck
   end
 
   def check_upper_diagonal(x, y)
-    cell = @board[y][x]
-    marker = cell.content
+    marker = @board[y][x].content
+    max_offset = @@WIN_LENGTH - 1
+    return nil unless in_bounds?(x + max_offset, y + max_offset)
 
-    return nil if marker == cell.DEFAULT
-
-    1.upto(@@WIN_LENGTH - 1) do |i|
-      return nil unless in_bounds?(x + i, y + i)
+    1.upto(max_offset) do |i|
       cell = @board[y + i][x + i]
       return nil unless cell.content == marker 
     end
@@ -68,13 +67,11 @@ class WinCheck
   end
 
   def check_lower_diagonal(x, y)
-    cell = @board[y][x]
-    marker = cell.content
+    marker = @board[y][x].content
+    max_offset = @@WIN_LENGTH - 1
+    return nil unless in_bounds?(x + max_offset, y - max_offset)
 
-    return nil if marker == cell.DEFAULT
-
-    1.upto(@@WIN_LENGTH - 1) do |i|
-      return nil unless in_bounds?(x + i, y - i)
+    1.upto(max_offset) do |i|
       cell = @board[y - i][x + i]
       return nil unless cell.content == marker 
     end
@@ -84,6 +81,12 @@ class WinCheck
   private
   def in_bounds?(x, y)
     (0 <= x && x < @size[:x]) && (0 <= y && y < @size[:y])
+  end
+
+  private
+  def set?(x, y)
+    cell = @board[y][x]
+    cell.content != cell.DEFAULT
   end
 
   private
